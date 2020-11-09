@@ -56,7 +56,7 @@ jobs:
       with:
         if-no-files-found: error
         retention-days: 1
-        name: docker-${{ matrix.version }}-${{ matrix.variant }}.tar
+        name: docker-${{ matrix.version }}-${{ matrix.variant }}
         path: /tmp/docker.tar
 
   push:
@@ -80,16 +80,10 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: docker-${{ matrix.version }}-${{ matrix.variant }}.tar
-        path: /tmp/images.tar
+        path: /tmp
 
-    - name: ls
-      run: |
-        ls -lah /tmp/
-        ls -lah /tmp/images.tar/
-
-#    - name: load image
-#      run: |
-#        docker load -i /tmp/images.tar
+    - name: load image
+      run: docker load -i /tmp/docker.tar
 #
 #    - name: list images
 #      run: docker images
