@@ -80,7 +80,13 @@ jobs:
         - "8.0"
         variant:
         - "fpm"
-        - "cli"
+        include:
+        - version: "7.2"
+          variant: "cli"
+        - version: "7.3"
+          variant: "cli"
+        - version: "7.4"
+          variant: "cli"
     steps:
     - name: log in (docker hub)
       uses: docker/login-action@v1
