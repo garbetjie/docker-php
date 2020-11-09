@@ -25,7 +25,7 @@ jobs:
 #        - version: 8.0
 #          image: "php:8.0.0alpha2-fpm-alpine3.12"
     steps:
-    - uses: actions/checkout@v2x
+    - uses: actions/checkout@v2
 
     - name: build variant
       run: |
