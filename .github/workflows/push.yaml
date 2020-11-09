@@ -28,49 +28,45 @@ jobs:
     - name: Check out code
       uses: actions/checkout@v2
 
-    - name: Set up Buildx
-      uses: docker/setup-buildx-action@v1
-      with:
-        driver: docker
-
     - name: Log in to Docker Hub
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKER_HUB_LOGIN }}
         password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
-    - name: Build variant
-      uses: docker/build-push-action@v2
-      with:
-        build-args: IMAGE=${{ matrix.source_image }}
-        tags: build/php:${{ matrix.version}}-${{ matrix.variant }}
-        cache-from: ${{ github.repository_owner }}/php:${{ matrix.version }}-${{ matrix.variant }}
+    - name: build variant
+      run: |
+        docker build \
+          -t build/php:${{ matrix.version }}-${{ matrix.variant }} \
+          --build-arg IMAGE=${{ matrix.source_image }} \
+          -f Dockerfile \
+          .
 
-    - name: Build nginx
+    - name: build nginx
       if: "matrix.variant == 'fpm'"
-      uses: docker/build-push-action@v2
-      with:
-        build-args: IMAGE=build/php:${{ matrix.version }}-${{ matrix.variant }}
-        tags: build/php:${{ matrix.version }}-nginx
-        file: Dockerfile-nginx
+      run: |
+        docker build \
+          -t build/php:${{ matrix.version }}-nginx \
+          --build-arg IMAGE=build/php:${{ matrix.version }}-${{ matrix.variant }} \
+          -f Dockerfile-nginx \
+          .
+
+    - name: tag variant
+      run: |
+        docker tag build/php:${{ matrix.version }}-${{ matrix.variant }} ${{ github.repository_owner }}/php-testing:${{ matrix.version }}-${{ matrix.variant }}
+
+    - name: tag nginx
+      run: |
+        docker tag build/php:${{ matrix.version }}-nginx ${{ github.repository_owner }}/php-testing:${{ matrix.version }}-nginx
 
     - name: list images
       run: docker images
 
-    - name: tag for push (variant)
-      run: docker tag build/php:${{ matrix.version }}-${{ matrix.variant }} ${{ github.repository_owner }}/php-testing:${{ matrix.version }}-${{ matrix.variant }}
-
-    - name: tag for push (nginx)
-      run: docker tag build/php:${{ matrix.version }}-nginx ${{ github.repository_owner }}/php-testing:${{ matrix.version }}-nginx
-
-    - name: list images (2)
-      run: docker images
-
-    - name: Push
-      uses: docker/build-push-action@v2
-      with:
-        push: true
-        tags: ${{ github.repository_owner }}/php-testing
+#    - name: Push
+#      uses: docker/build-push-action@v2
+#      with:
+#        push: true
+#        tags: ${{ github.repository_owner }}/php-testing
 
   listing:
     runs-on: ubuntu-latest
