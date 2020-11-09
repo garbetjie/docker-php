@@ -49,15 +49,15 @@ jobs:
         images=("build/php:${{ matrix.version }}-${{ matrix.variant }}")
         [[ "${{ matrix.variant }}" = "fpm" ]] && images+=("build/php:${{ matrix.version }}-nginx")
 
-        docker save -o /tmp/docker.tar "${images[@]}"
+        docker save -o /tmp/images.tar "${images[@]}"
 
     - name: upload artifacts
       uses: actions/upload-artifact@v2
       with:
         if-no-files-found: error
         retention-days: 1
-        name: docker-${{ matrix.version }}-${{ matrix.variant }}
-        path: /tmp/docker.tar
+        name: ${{ matrix.version }}-${{ matrix.variant }}
+        path: /tmp/images.tar
 
   push:
     runs-on: ubuntu-latest
@@ -79,11 +79,11 @@ jobs:
     - name: download image
       uses: actions/download-artifact@v2
       with:
-        name: docker-${{ matrix.version }}-${{ matrix.variant }}.tar
+        name: ${{ matrix.version }}-${{ matrix.variant }}
         path: /tmp
 
     - name: load image
-      run: docker load -i /tmp/docker.tar
+      run: docker load -i /tmp/images.tar
 #
 #    - name: list images
 #      run: docker images
