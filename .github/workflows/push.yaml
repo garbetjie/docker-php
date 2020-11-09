@@ -52,7 +52,7 @@ jobs:
         docker save -o /tmp/docker.tar "${images[@]}"
 
     - name: upload artifacts
-      uses: actions@upload-artifact@v2
+      uses: actions/upload-artifact@v2
       with:
         if-no-files-found: error
         retention-days: 1
