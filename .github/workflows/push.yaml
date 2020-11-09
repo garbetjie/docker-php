@@ -84,14 +84,23 @@ jobs:
 
     - name: load image
       run: docker load -i /tmp/images.tar
-#
-#    - name: list images
-#      run: docker images
-#    - name: push variant
-#      run: |
-#        docker push ${{ github.repository_owner }}/php-testing:${{ matrix.version }}-${{ matrix.variant }}
-#
-#    - name: push nginx
-#      if: "matrix.variant == 'fpm'"
-#      run: |
-#        docker push ${{ github.repository_owner }}/php-testing:${{ matrix.version }}-nginx
+
+    - name: tag variant
+      run: |
+        docker tag \
+          build/php:${{ matrix.version }}-${{ matrix.variant }} \
+          ${{ github.repository_owner }}/php:${{ matrix.version }}-${{ matrix.variant }}
+
+    - name: tag nginx
+      if: "matrix.variant == 'fpm'"
+      run: |
+        docker tag \
+          build/php:${{ matrix.version }}-nginx \
+          ${{ github.repository_owner }}/php:${{ matrix.version }}-nginx
+
+    - name: push variant
+      run: docker push ${{ github.repository_owner }}/php:${{ matrix.version }}-${{ matrix.variant }}
+
+    - name: push nginx
+      if: "matrix.variant == 'fpm'"
+      run: ${{ github.repository_owner }}/php:${{ matrix.version }}-nginxs
