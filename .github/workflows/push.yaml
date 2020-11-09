@@ -37,7 +37,7 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         build-args:
-        - IMAGE=${{ matrix.image }}
+        - "IMAGE=${{ matrix.image }}"
         tags:
         - "${{ github.repository_owner }}/php:${{ matrix.version }}"
         cache-from:
