@@ -1,0 +1,44 @@
+on:
+  push:
+    branches: [actions]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version:
+        - 7.2
+        - 7.3
+        - 7.4
+        - 8.0
+        include:
+        - version: 7.2
+          image: "php:7.2.32-fpm-alpine3.12"
+        - version: 7.3
+          image: "php:7.3.20-fpm-alpine3.12"
+        - version: 7.4
+          image: "php:7.4.8-fpm-alpine3.12"
+        - version: 8.0
+          image: "php:8.0.0alpha2-fpm-alpine3.12"
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v2
+
+    - name: Set up Buildx
+      uses: docker/setup-buildx-action@v1
+
+#    - name: Log in to Docker Hub
+#      uses: docker/login-action@v1
+#      with:
+#        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+#        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+    - name: Build & push
+      uses: docker/build-push-action@v2
+      with:
+        build-args:
+        - IMAGE=${{ matrix.image }}
+        tags:
+        - "${{ github.repository_owner }}/php:${{ matrix.version }}"
+        cache-from:
+        - "${{ github.repository_owner }}/php:${{ matrix.version }}"
