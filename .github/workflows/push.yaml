@@ -7,10 +7,10 @@ jobs:
     strategy:
       matrix:
         version:
-        - 7.2
-        - 7.3
-        - 7.4
-        - 8.0
+        - "7.2"
+        - "7.3"
+        - "7.4"
+        - "8.0"
         include:
         - version: 7.2
           image: "php:7.2.32-fpm-alpine3.12"
@@ -23,15 +23,6 @@ jobs:
     steps:
     - name: Check out code
       uses: actions/checkout@v2
-
-#    - name: build
-#      run: |
-#        docker build \
-#          -t build/${{ github.repository_owner }}/php:${{ matrix.version }} \
-#          -f Dockerfile \
-#          --build-arg IMAGE=${{ matrix.image }} \
-#          --cache-from ${{ github.repository_owner }}/php:${{ matrix.version }} \
-#          .
 
     - name: Set up Buildx
       uses: docker/setup-buildx-action@v1
