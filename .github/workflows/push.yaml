@@ -49,7 +49,6 @@ jobs:
       if: "matrix.variant == 'fpm'"
       uses: docker/build-push-action@v2
       with:
-        load: true
         build-args: IMAGE=build/php:${{ matrix.version}}-${{ matrix.variant }}
         tags: build/php:${{ matrix.version}}-nginx
         file: Dockerfile-nginx
