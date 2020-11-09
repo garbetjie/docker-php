@@ -56,6 +56,7 @@ jobs:
         docker tag build/php:${{ matrix.version }}-${{ matrix.variant }} ${{ github.repository_owner }}/php-testing:${{ matrix.version }}-${{ matrix.variant }}
 
     - name: tag nginx
+      if: "matrix.variant == 'fpm'"
       run: |
         docker tag build/php:${{ matrix.version }}-nginx ${{ github.repository_owner }}/php-testing:${{ matrix.version }}-nginx
 
