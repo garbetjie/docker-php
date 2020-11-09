@@ -42,3 +42,6 @@ jobs:
           ${{ github.repository_owner }}/php:${{ matrix.version }}
         cache-from: |
           ${{ github.repository_owner }}/php:${{ matrix.version }}
+
+    - name: list images
+      run: docker images
