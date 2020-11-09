@@ -25,7 +25,12 @@ jobs:
       uses: actions/checkout@v2
 
     - name: build
-      run: docker build -t build/${{ github.repository_owner }}/php:${{ matrix.version }} -f Dockerfile .
+      run: |
+        docker build \
+          -t build/${{ github.repository_owner }}/php:${{ matrix.version }} \
+          -f Dockerfile \
+          --cache-from ${{ github.repository_owner }}/php:${{ matrix.version }} \
+          .
 
 #    - name: Set up Buildx
 #      uses: docker/setup-buildx-action@v1
