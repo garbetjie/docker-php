@@ -36,6 +36,8 @@ jobs:
     - name: Build & push
       uses: docker/build-push-action@v2
       with:
+        outputs: |
+          type=image
         build-args: |
           IMAGE=${{ matrix.image }}
         tags: |
