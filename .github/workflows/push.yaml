@@ -18,12 +18,21 @@ jobs:
         - version: "7.2"
           variant: "cli"
           source_image: "php:7.2.32-zts-alpine3.12"
-#        - version: 7.3
-#          image: "php:7.3.20-fpm-alpine3.12"
-#        - version: 7.4
-#          image: "php:7.4.8-fpm-alpine3.12"
-#        - version: 8.0
-#          image: "php:8.0.0alpha2-fpm-alpine3.12"
+        - version: "7.3"
+          variant: "fpm"
+          image: "php:7.3.20-fpm-alpine3.12"
+        - version: "7.3"
+          variant: "cli"
+          image: "php:7.3.20-zts-alpine3.12"
+        - version: "7.4"
+          variant: "fpm"
+          image: "php:7.4.8-fpm-alpine3.12"
+        - version: "7.4"
+          variant: "cli"
+          image: "php:7.4.8-zts-alpine3.12"
+        - version: "8.0"
+          variant: "fpm"
+          image: "php:8.0.0alpha2-fpm-alpine3.12"
     steps:
     - uses: actions/checkout@v2
 
@@ -66,6 +75,9 @@ jobs:
       matrix:
         version:
         - "7.2"
+        - "7.3"
+        - "7.4"
+        - "8.0"
         variant:
         - "fpm"
         - "cli"
@@ -103,4 +115,4 @@ jobs:
 
     - name: push nginx
       if: "matrix.variant == 'fpm'"
-      run: ${{ github.repository_owner }}/php:${{ matrix.version }}-nginxs
+      run: ${{ github.repository_owner }}/php:${{ matrix.version }}-nginx
