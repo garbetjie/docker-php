@@ -1,6 +1,6 @@
 on:
   push:
-    branches: [ master ]
+    branches: [ buildx ]
     paths-ignore:
     - "README.md"
     - "LICENCE.md"
@@ -34,6 +34,7 @@ jobs:
           source_image: "php:8.0.0alpha2-fpm-alpine3.12"
     steps:
     - uses: actions/checkout@v2
+    - uses: docker/setup-buildx-action@v1
 
     - name: build
       run: |
