@@ -47,7 +47,10 @@ jobs:
 #          build/php:${{ matrix.version }}-${{ matrix.variant }}
         outputs: |
           type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
-#          type=image,name=build/php:${{ matrix.version }}-${{ matrix.variant }}
+
+    - name: import image
+      run: |
+        docker import /tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar build/php:${{ matrix.version }}-${{ matrix.variant }}
 
 #    - name: build (nginx)
 #      uses: docker/build-push-action@v2
