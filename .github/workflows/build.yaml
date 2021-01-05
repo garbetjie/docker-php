@@ -47,7 +47,7 @@ jobs:
 #          build/php:${{ matrix.version }}-${{ matrix.variant }}
         outputs: |
           type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
-          type=image,name=build/php:${{ matrix.version }}-${{ matrix.variant }}
+#          type=image,name=build/php:${{ matrix.version }}-${{ matrix.variant }}
 
     - name: build (nginx)
       uses: docker/build-push-action@v2
@@ -61,7 +61,7 @@ jobs:
 #          build/php:${{ matrix.version }}-nginx
         outputs: |
           type=tar,dest=/tmp/docker-image-${{ matrix.version }}-nginx.tar
-          type=image,name=build/php:${{ matrix.version }}-nginx
+#          type=image,name=build/php:${{ matrix.version }}-nginx
 
     - name: build composer
       uses: docker/build-push-action@v2
@@ -74,7 +74,7 @@ jobs:
 #          build/php:${{ matrix.version }}-${{ matrix.variant }}
         outputs: |
           type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
-          type=image,name=build/php:${{ matrix.version }}-${{ matrix.variant }}-composer
+#          type=image,name=build/php:${{ matrix.version }}-${{ matrix.variant }}-composer
 
     - name: build composer (nginx)
       if: "matrix.variant == 'fpm'"
@@ -86,7 +86,7 @@ jobs:
           IMAGE=build/php:${{ matrix.version }}-nginx
         outputs: |
           type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
-          type=image,name=build/php:${{ matrix.version }}-nginx-composer
+#          type=image,name=build/php:${{ matrix.version }}-nginx-composer
 
 #    - name: save images
 #      run: |
