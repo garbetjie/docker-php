@@ -49,19 +49,18 @@ jobs:
           type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
 #          type=image,name=build/php:${{ matrix.version }}-${{ matrix.variant }}
 
-    - name: build (nginx)
-      uses: docker/build-push-action@v2
-      if: "matrix.variant == 'fpm'"
-      with:
-        context: .
-        file: Dockerfile-nginx
-        build-args: |
-          IMAGE=build/php:${{ matrix.version }}-${{ matrix.variant }}
-#        tags:
-#          build/php:${{ matrix.version }}-nginx
-        outputs: |
-          type=tar,dest=/tmp/docker-image-${{ matrix.version }}-nginx.tar
-#          type=image,name=build/php:${{ matrix.version }}-nginx
+#    - name: build (nginx)
+#      uses: docker/build-push-action@v2
+#      if: "matrix.variant == 'fpm'"
+#      with:
+#        context: .
+#        file: Dockerfile-nginx
+#        build-args: |
+#          IMAGE=build/php:${{ matrix.version }}-${{ matrix.variant }}
+##        tags:
+##          build/php:${{ matrix.version }}-nginx
+#        outputs: |
+#          type=tar,dest=/tmp/docker-image-${{ matrix.version }}-nginx.tar
 
     - name: build composer
       uses: docker/build-push-action@v2
@@ -74,19 +73,17 @@ jobs:
 #          build/php:${{ matrix.version }}-${{ matrix.variant }}
         outputs: |
           type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
-#          type=image,name=build/php:${{ matrix.version }}-${{ matrix.variant }}-composer
 
-    - name: build composer (nginx)
-      if: "matrix.variant == 'fpm'"
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: Dockerfile-composer
-        build-args: |
-          IMAGE=build/php:${{ matrix.version }}-nginx
-        outputs: |
-          type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
-#          type=image,name=build/php:${{ matrix.version }}-nginx-composer
+#    - name: build composer (nginx)
+#      if: "matrix.variant == 'fpm'"
+#      uses: docker/build-push-action@v2
+#      with:
+#        context: .
+#        file: Dockerfile-composer
+#        build-args: |
+#          IMAGE=build/php:${{ matrix.version }}-nginx
+#        outputs: |
+#          type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
 
 #    - name: save images
 #      run: |
