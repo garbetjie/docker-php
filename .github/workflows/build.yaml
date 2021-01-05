@@ -35,53 +35,71 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: docker/setup-buildx-action@v1
+    - uses: docker/setup-qemu-action@v1
 
     - name: build
-      run: |
-        docker build \
-          -t build/php:${{ matrix.version }}-${{ matrix.variant }} \
-          --build-arg IMAGE=${{ matrix.source_image }} \
-          -f Dockerfile \
-          .
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        build-args: |
+          IMAGE=${{ matrix.source_image }}
+#        tags:
+#          build/php:${{ matrix.version }}-${{ matrix.variant }}
+        outputs: |
+          type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
+          type=image,name=build/php:${{ matrix.version }}-${{ matrix.variant }}
 
     - name: build (nginx)
+      uses: docker/build-push-action@v2
       if: "matrix.variant == 'fpm'"
-      run: |
-        docker build \
-          -t build/php:${{ matrix.version }}-nginx \
-          --build-arg IMAGE=build/php:${{ matrix.version }}-${{ matrix.variant }} \
-          -f Dockerfile-nginx \
-          .
+      with:
+        context: .
+        file: Dockerfile-nginx
+        build-args: |
+          IMAGE=build/php:${{ matrix.version }}-${{ matrix.variant }}
+#        tags:
+#          build/php:${{ matrix.version }}-nginx
+        outputs: |
+          type=tar,dest=/tmp/docker-image-${{ matrix.version }}-nginx.tar
+          type=image,name=build/php:${{ matrix.version }}-nginx
 
     - name: build composer
-      run: |
-        docker build \
-          -t build/php:${{ matrix.version }}-${{ matrix.variant }}-composer \
-          --build-arg IMAGE=build/php:${{ matrix.version }}-${{ matrix.variant }} \
-          -f Dockerfile-composer \
-          .
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: Dockerfile-composer
+        build-args: |
+          IMAGE=build/php:${{ matrix.version }}-${{ matrix.variant }}
+#        tags:
+#          build/php:${{ matrix.version }}-${{ matrix.variant }}
+        outputs: |
+          type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
+          type=image,name=build/php:${{ matrix.version }}-${{ matrix.variant }}-composer
 
     - name: build composer (nginx)
       if: "matrix.variant == 'fpm'"
-      run: |
-        docker build \
-          -t build/php:${{ matrix.version }}-nginx-composer \
-          --build-arg IMAGE=build/php:${{ matrix.version }}-nginx \
-          -f Dockerfile-composer \
-          .
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: Dockerfile-composer
+        build-args: |
+          IMAGE=build/php:${{ matrix.version }}-nginx
+        outputs: |
+          type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
+          type=image,name=build/php:${{ matrix.version }}-nginx-composer
 
-    - name: save images
-      run: |
-        images=()
-        images+=("build/php:${{ matrix.version }}-${{ matrix.variant }}")
-        images+=("build/php:${{ matrix.version }}-${{ matrix.variant }}-composer")
-
-        if [ "${{ matrix.variant }}" = "fpm" ]; then
-          images+=("build/php:${{ matrix.version }}-nginx")
-          images+=("build/php:${{ matrix.version }}-nginx-composer")
-        fi
-
-        docker save -o /tmp/images.tar "${images[@]}"
+#    - name: save images
+#      run: |
+#        images=()
+#        images+=("build/php:${{ matrix.version }}-${{ matrix.variant }}")
+#        images+=("build/php:${{ matrix.version }}-${{ matrix.variant }}-composer")
+#
+#        if [ "${{ matrix.variant }}" = "fpm" ]; then
+#          images+=("build/php:${{ matrix.version }}-nginx")
+#          images+=("build/php:${{ matrix.version }}-nginx-composer")
+#        fi
+#
+#        docker save -o /tmp/images.tar "${images[@]}"
 
     - name: upload artifacts
       uses: actions/upload-artifact@v2
@@ -89,8 +107,37 @@ jobs:
         if-no-files-found: error
         retention-days: 1
         name: ${{ matrix.version }}-${{ matrix.variant }}
-        path: /tmp/images.tar
+        path: /tmp/docker-image-*.tar
 
+#  test-platforms:
+#    runs-on: ubuntu-latest
+#    if: "github.ref == 'refs/heads/buildx'"
+#    needs: [ build ]
+#    strategy:
+#      matrix:
+#        version:
+#        - "7.2"
+#        - "7.3"
+#        - "7.4"
+#        - "8.0"
+#        variant:
+#        - "fpm"
+#        include:
+#        - version: "7.2"
+#          variant: "cli"
+#        - version: "7.3"
+#          variant: "cli"
+#        - version: "7.4"
+#          variant: "cli"
+#    steps:
+#    - name: download image
+#      uses: actions/download-artifact@v2
+#      with:
+#        name: ${{ matrix.version }}-${{ matrix.variant }}
+#        path: /tmp
+#
+#    - name: load image
+#      run: docker load -i /tmp/images.tar
   push:
     runs-on: ubuntu-latest
     if: "github.ref == 'refs/heads/master'"
