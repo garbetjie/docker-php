@@ -6,36 +6,46 @@ on:
     - "LICENCE.md"
     - ".gitignore"
 jobs:
+  # Current matrix:
+  # 
+  # include:
+  # - version: "7.2"
+  #   variant: "fpm"
+  #   source_image: "php:7.2.32-fpm-alpine3.12"
+  # - version: "7.2"
+  #   variant: "cli"
+  #   source_image: "php:7.2.32-zts-alpine3.12"
+  # - version: "7.3"
+  #   variant: "fpm"
+  #   source_image: "php:7.3.20-fpm-alpine3.12"
+  # - version: "7.3"
+  #   variant: "cli"
+  #   source_image: "php:7.3.20-zts-alpine3.12"
+  # - version: "7.4"
+  #   variant: "fpm"
+  #   source_image: "php:7.4.8-fpm-alpine3.12"
+  # - version: "7.4"
+  #   variant: "cli"
+  #   source_image: "php:7.4.8-zts-alpine3.12"
+  # - version: "8.0"
+  #   variant: "fpm"
+  #   source_image: "php:8.0.0alpha2-fpm-alpine3.12"
+  matrix:
+    runs-on: ubuntu-latest
+    steps:
+    - name: set matrix
+      run: |
+        echo "::set-output name=matrix::{\"include\":[{\"version\":\"7.2\",\"variant\":\"fpm\",\"source_image\":\"php:7.2.32-fpm-alpine3.12\"},{\"version\":\"7.2\",\"variant\":\"cli\",\"source_image\":\"php:7.2.32-zts-alpine3.12\"},{\"version\":\"7.3\",\"variant\":\"fpm\",\"source_image\":\"php:7.3.20-fpm-alpine3.12\"},{\"version\":\"7.3\",\"variant\":\"cli\",\"source_image\":\"php:7.3.20-zts-alpine3.12\"},{\"version\":\"7.4\",\"variant\":\"fpm\",\"source_image\":\"php:7.4.8-fpm-alpine3.12\"},{\"version\":\"7.4\",\"variant\":\"cli\",\"source_image\":\"php:7.4.8-zts-alpine3.12\"},{\"version\":\"8.0\",\"variant\":\"fpm\",\"source_image\":\"php:8.0.0alpha2-fpm-alpine3.12\"}]}"
+
   build:
+    needs: [matrix]
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        include:
-        - version: "7.2"
-          variant: "fpm"
-          source_image: "php:7.2.32-fpm-alpine3.12"
-        - version: "7.2"
-          variant: "cli"
-          source_image: "php:7.2.32-zts-alpine3.12"
-        - version: "7.3"
-          variant: "fpm"
-          source_image: "php:7.3.20-fpm-alpine3.12"
-        - version: "7.3"
-          variant: "cli"
-          source_image: "php:7.3.20-zts-alpine3.12"
-        - version: "7.4"
-          variant: "fpm"
-          source_image: "php:7.4.8-fpm-alpine3.12"
-        - version: "7.4"
-          variant: "cli"
-          source_image: "php:7.4.8-zts-alpine3.12"
-        - version: "8.0"
-          variant: "fpm"
-          source_image: "php:8.0.0alpha2-fpm-alpine3.12"
+      matrix: ${{fromJson(needs.matrix.outputs.matrix}}
     steps:
     - uses: actions/checkout@v2
-    - uses: docker/setup-buildx-action@v1
     - uses: docker/setup-qemu-action@v1
+    - uses: docker/setup-buildx-action@v1
 
     - name: build
       uses: docker/build-push-action@v2
@@ -43,14 +53,8 @@ jobs:
         context: .
         build-args: |
           IMAGE=${{ matrix.source_image }}
-#        tags:
-#          build/php:${{ matrix.version }}-${{ matrix.variant }}
-        outputs: |
-          type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
-
-    - name: import image
-      run: |
-        docker import /tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar build/php:${{ matrix.version }}-${{ matrix.variant }}
+        cache-to: |
+          type=local,dest=/tmp/docker-image
 
 #    - name: build (nginx)
 #      uses: docker/build-push-action@v2
@@ -65,29 +69,6 @@ jobs:
 #        outputs: |
 #          type=tar,dest=/tmp/docker-image-${{ matrix.version }}-nginx.tar
 
-    - name: build composer
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: Dockerfile-composer
-        build-args: |
-          IMAGE=build/php:${{ matrix.version }}-${{ matrix.variant }}
-#        tags:
-#          build/php:${{ matrix.version }}-${{ matrix.variant }}
-        outputs: |
-          type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
-
-#    - name: build composer (nginx)
-#      if: "matrix.variant == 'fpm'"
-#      uses: docker/build-push-action@v2
-#      with:
-#        context: .
-#        file: Dockerfile-composer
-#        build-args: |
-#          IMAGE=build/php:${{ matrix.version }}-nginx
-#        outputs: |
-#          type=tar,dest=/tmp/docker-image-${{ matrix.version }}-${{ matrix.variant }}.tar
-
 #    - name: save images
 #      run: |
 #        images=()
@@ -101,13 +82,19 @@ jobs:
 #
 #        docker save -o /tmp/images.tar "${images[@]}"
 
-    - name: upload artifacts
-      uses: actions/upload-artifact@v2
+    - name: store cache
+      uses: actions/cache@v2
       with:
-        if-no-files-found: error
-        retention-days: 1
-        name: ${{ matrix.version }}-${{ matrix.variant }}
-        path: /tmp/docker-image-*.tar
+        path: /tmp/docker-image
+        key: ${{matrix.version}}-${{matrix.variant}}
+
+#    - name: upload artifacts
+#      uses: actions/upload-artifact@v2
+#      with:
+#        if-no-files-found: error
+#        retention-days: 1
+#        name: ${{ matrix.version }}-${{ matrix.variant }}
+#        path: /tmp/docker-image*.tar
 
 #  test-platforms:
 #    runs-on: ubuntu-latest
