@@ -7,7 +7,7 @@ on:
     - ".gitignore"
 jobs:
   # Current matrix:
-  # 
+  #
   # include:
   # - version: "7.2"
   #   variant: "fpm"
@@ -32,8 +32,11 @@ jobs:
   #   source_image: "php:8.0.0alpha2-fpm-alpine3.12"
   matrix:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
     - name: set matrix
+      id: set-matrix
       run: |
         echo "::set-output name=matrix::{\"include\":[{\"version\":\"7.2\",\"variant\":\"fpm\",\"source_image\":\"php:7.2.32-fpm-alpine3.12\"},{\"version\":\"7.2\",\"variant\":\"cli\",\"source_image\":\"php:7.2.32-zts-alpine3.12\"},{\"version\":\"7.3\",\"variant\":\"fpm\",\"source_image\":\"php:7.3.20-fpm-alpine3.12\"},{\"version\":\"7.3\",\"variant\":\"cli\",\"source_image\":\"php:7.3.20-zts-alpine3.12\"},{\"version\":\"7.4\",\"variant\":\"fpm\",\"source_image\":\"php:7.4.8-fpm-alpine3.12\"},{\"version\":\"7.4\",\"variant\":\"cli\",\"source_image\":\"php:7.4.8-zts-alpine3.12\"},{\"version\":\"8.0\",\"variant\":\"fpm\",\"source_image\":\"php:8.0.0alpha2-fpm-alpine3.12\"}]}"
 
@@ -41,7 +44,7 @@ jobs:
     needs: [matrix]
     runs-on: ubuntu-latest
     strategy:
-      matrix: ${{fromJson(needs.matrix.outputs.matrix}}
+      matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
     steps:
     - uses: actions/checkout@v2
     - uses: docker/setup-qemu-action@v1
