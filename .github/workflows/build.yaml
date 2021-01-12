@@ -63,6 +63,7 @@ jobs:
           IMAGE=${{ matrix.source_image }}
         tags:
           ${{ github.repository_owner }}/php:${{ matrix.version }}-${{ matrix.variant }}
+        outputs: type=local,dest=/tmp/docker-cache
         cache-to: type=local,dest=/tmp/docker-cache
         cache-from: type=local,dest=/tmp/docker-cache
 
@@ -76,6 +77,7 @@ jobs:
           IMAGE=${{ github.repository_owner }}/php:${{ matrix.version }}-${{ matrix.variant }}
         tags:
           ${{ github.repository_owner }}/php:${{ matrix.version }}-nginx
+        outputs: type=local,dest=/tmp/docker-cache
         cache-to: type=local,dest=/tmp/docker-cache
         cache-from: type=local,dest=/tmp/docker-cache
 
