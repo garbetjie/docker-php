@@ -82,7 +82,7 @@ jobs:
         cache-from: type=local,src=/tmp/docker-cache
 
   test-build-cache:
-    needs: [build]
+    needs: [build, matrix]
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJson(needs.matrix.outputs.matrix) }}
