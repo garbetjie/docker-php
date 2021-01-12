@@ -53,6 +53,7 @@ jobs:
       with:
         path: /tmp/docker-cache
         key: ${{ matrix.version }}-${{ matrix.variant }}-${{ hashFiles('Dockerfile*', 'fs/**', 'fs-nginx/**') }}
+        restore-keys: ${{ matrix.version }}-${{ matrix.variant }}-
     - name: build variant
       uses: docker/build-push-action@v2
       with:
@@ -88,6 +89,7 @@ jobs:
       with:
         path: /tmp/docker-cache
         key: ${{ matrix.version }}-${{ matrix.variant }}-${{ hashFiles('Dockerfile*', 'fs/**', 'fs-nginx/**') }}
+        restore-keys: ${{ matrix.version }}-${{ matrix.variant }}-
     - name: build variant
       uses: docker/build-push-action@v2
       with:
