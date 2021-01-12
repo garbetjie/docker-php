@@ -55,6 +55,8 @@ jobs:
         path: /tmp/docker-cache
         key: ${{matrix.version}}-${{matrix.variant}}
 
+    - run: ls -lah /tmp/docker-cache
+
     - name: build variant
       uses: docker/build-push-action@v2
       with:
