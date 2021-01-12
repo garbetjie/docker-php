@@ -62,7 +62,7 @@ jobs:
         build-args: IMAGE=${{ matrix.source_image }}
         tags: ${{ github.repository_owner }}/php:${{ matrix.version }}-${{ matrix.variant }}
         outputs: type=local,dest=/tmp/docker-cache
-        cache-to: type=local,dest=/tmp/docker-cache
+        cache-to: type=local,dest=/tmp/docker-cache,mode=max
         cache-from: type=local,src=/tmp/docker-cache
 
     - name: build nginx
@@ -74,7 +74,7 @@ jobs:
         build-args: IMAGE=${{ github.repository_owner }}/php:${{ matrix.version }}-${{ matrix.variant }}
         tags: ${{ github.repository_owner }}/php:${{ matrix.version }}-nginx
         outputs: type=local,dest=/tmp/docker-cache
-        cache-to: type=local,dest=/tmp/docker-cache
+        cache-to: type=local,dest=/tmp/docker-cache,mode=max
         cache-from: type=local,src=/tmp/docker-cache
 
   test-build-cache:
