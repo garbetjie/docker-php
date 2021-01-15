@@ -39,18 +39,34 @@ version() {
     echo COMMENT_WHEN_PHP_LT_73=";"
     echo COMMENT_WHEN_PHP_LT_74=";"
     echo COMMENT_WHEN_PHP_LT_80=";"
+
+    echo COMMENT_WHEN_PHP_GE_73=""
+    echo COMMENT_WHEN_PHP_GE_74=""
+    echo COMMENT_WHEN_PHP_GE_80=""
   elif [ "$(version "$PHP_VERSION")" -lt "$(version 7.4.0)" ]; then
     echo COMMENT_WHEN_PHP_LT_73=""
     echo COMMENT_WHEN_PHP_LT_74=";"
     echo COMMENT_WHEN_PHP_LT_80=";"
+
+    echo COMMENT_WHEN_PHP_GE_73=";"
+    echo COMMENT_WHEN_PHP_GE_74=""
+    echo COMMENT_WHEN_PHP_GE_80=""
   elif [ "$(version "$PHP_VERSION")" -lt "$(version 8.0.0)" ]; then
     echo COMMENT_WHEN_PHP_LT_73=""
     echo COMMENT_WHEN_PHP_LT_74=""
     echo COMMENT_WHEN_PHP_LT_80=";"
+
+    echo COMMENT_WHEN_PHP_GE_73=";"
+    echo COMMENT_WHEN_PHP_GE_74=";"
+    echo COMMENT_WHEN_PHP_GE_80=""
   else
     echo COMMENT_WHEN_PHP_LT_73=""
     echo COMMENT_WHEN_PHP_LT_74=""
     echo COMMENT_WHEN_PHP_LT_80=""
+
+    echo COMMENT_WHEN_PHP_GE_73=";"
+    echo COMMENT_WHEN_PHP_GE_74=";"
+    echo COMMENT_WHEN_PHP_GE_80=";"
   fi
 
   if echo "$LISTEN" | grep -q "/"; then
