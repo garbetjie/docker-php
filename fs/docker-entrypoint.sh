@@ -33,6 +33,11 @@ version() {
   echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'
 }
 
+# Environment variable backwards-compatibility.
+[ "$XDEBUG_IDE_KEY" != "" ] && export XDEBUG_IDEKEY="$XDEBUG_IDE_KEY"
+[ "$XDEBUG_REMOTE_HOST" != "" ] && export XDEBUG_CLIENT_HOST="$XDEBUG_REMOTE_HOST"
+[ "$XDEBUG_REMOTE_PORT" != "" ] && export XDEBUG_CLIENT_PORT="$XDEBUG_REMOTE_PORT"
+
 # Build sedfile.
 {
   if [ "$(version "$PHP_VERSION")" -lt "$(version 7.3.0)" ]; then
